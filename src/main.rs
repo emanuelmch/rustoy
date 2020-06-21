@@ -29,8 +29,9 @@ const CHROMOSOME_SIZE: usize = 10;
 const MAX_GENE: i8 = CHROMOSOME_SIZE as i8;
 const MAX_FITNESS: u8 = 100;
 
-const MAX_ITERATIONS: u32 = 5000;
-const ELITE: usize = 6;
+const MAX_ITERATIONS: u32 = 50000;
+const ELITE: usize = 8;
+const MUTATION_CHANCE: u8 = 20; // Percentage instead of float just for the sake of code clearness
 
 #[derive(Copy, Clone)]
 struct Chromosome {
@@ -91,6 +92,8 @@ fn next_generation(population: [Chromosome; POPULATION_SIZE]) -> [Chromosome; PO
     for (i, chromosome) in offspring.iter().enumerate() { final_population[i + ELITE] = chromosome.to_owned() };
     for i in (ELITE + offspring.len())..POPULATION_SIZE { final_population[i] = Default::default(); }
 
+    mutate(&mut final_population);
+
     return final_population;
 }
 
@@ -101,6 +104,17 @@ fn make_offspring(mom: Chromosome, dad: Chromosome) -> Chromosome {
     mom.genes[0..MIDDLE].iter().enumerate().for_each(|(i, gene)| child[i] = gene.to_owned());
     dad.genes[MIDDLE..CHROMOSOME_SIZE].iter().enumerate().for_each(|(i, gene)| child[i + MIDDLE] = gene.to_owned());
     return Chromosome { genes: child, fitness: fitness(child) };
+}
+
+fn mutate(population: &mut [Chromosome; 40]) {
+    let mut rng = rand::thread_rng();
+
+    for chromosome in population.iter_mut() {
+        if rng.gen_range(1, 100) <= MUTATION_CHANCE {
+            let gene_index = rng.gen_range(0, CHROMOSOME_SIZE);
+            chromosome.genes[gene_index] = rng.gen_range(0, MAX_GENE);
+        }
+    }
 }
 
 fn run() -> Chromosome {
@@ -127,6 +141,7 @@ fn run() -> Chromosome {
 fn main() {
     assert_eq!((ELITE % 2), 0);
     assert!((ELITE * 2) < POPULATION_SIZE);
+
     let result = run();
     println!("Best candidate has fitness {}: {:?}", result.fitness, result.genes);
 }
