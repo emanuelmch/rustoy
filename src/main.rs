@@ -22,6 +22,11 @@
 
 use rand::Rng;
 
+use std::mem::MaybeUninit;
+
+const POPULATION_SIZE: usize = 40;
+
+#[derive(Copy, Clone)]
 struct Chromosome {
     genes: [i8; 10],
     fitness: i8,
@@ -52,7 +57,15 @@ fn fitness(genes: [i8; 10]) -> i8 {
 }
 
 fn run() -> Chromosome {
-    return Default::default();
+    let mut population = unsafe {
+        let mut arr: [Chromosome; POPULATION_SIZE] = MaybeUninit::uninit().assume_init();
+        for i in 0..arr.len() {
+            arr[i] = Default::default();
+        }
+        arr
+    };
+    population.sort_by(|a, b| a.fitness.cmp(&b.fitness));
+    return population[0];
 }
 
 fn main() {
