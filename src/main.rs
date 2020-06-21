@@ -27,6 +27,19 @@ struct Chromosome {
     fitness: i8,
 }
 
+impl Default for Chromosome {
+    fn default() -> Self {
+        let mut rng = rand::thread_rng();
+
+        let mut genes = [0; 10];
+        for i in 0..10 {
+            genes[i] = rng.gen_range(0, 10);
+        }
+        let fitness = fitness(genes);
+        return Chromosome { genes, fitness };
+    }
+}
+
 fn fitness(genes: [i8; 10]) -> i8 {
     let mut result = 0;
     for i in 0..10 {
@@ -38,19 +51,8 @@ fn fitness(genes: [i8; 10]) -> i8 {
     return result;
 }
 
-fn random() -> Chromosome {
-    let mut rng = rand::thread_rng();
-
-    let mut genes = [0; 10];
-    for i in 0..10 {
-        genes[i] = rng.gen_range(0, 10);
-    }
-    let fitness = fitness(genes);
-    return Chromosome { genes, fitness };
-}
-
 fn run() -> Chromosome {
-    return random();
+    return Default::default();
 }
 
 fn main() {
