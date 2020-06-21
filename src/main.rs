@@ -23,8 +23,19 @@
 use rand::Rng;
 
 struct Chromosome {
-    genes: [i32; 10],
+    genes: [i8; 10],
     fitness: i8,
+}
+
+fn fitness(genes: [i8; 10]) -> i8 {
+    let mut result = 0;
+    for i in 0..10 {
+        // TODO Can I remove this cast somehow?
+        if genes[i] == i as i8 {
+            result += 1;
+        }
+    }
+    return result;
 }
 
 fn random() -> Chromosome {
@@ -34,7 +45,7 @@ fn random() -> Chromosome {
     for i in 0..10 {
         genes[i] = rng.gen_range(0, 10);
     }
-    let fitness = rng.gen_range(0, 100);
+    let fitness = fitness(genes);
     return Chromosome { genes, fitness };
 }
 
