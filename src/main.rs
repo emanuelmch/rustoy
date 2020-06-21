@@ -20,16 +20,26 @@
  * SOFTWARE.
  */
 
+use rand::Rng;
+
 struct Chromosome {
     genes: [i32; 10],
     fitness: i8,
 }
 
+fn random() -> Chromosome {
+    let mut rng = rand::thread_rng();
+
+    let mut genes = [0; 10];
+    for i in 0..10 {
+        genes[i] = rng.gen_range(0, 10);
+    }
+    let fitness = rng.gen_range(0, 100);
+    return Chromosome { genes, fitness };
+}
+
 fn run() -> Chromosome {
-    return Chromosome {
-        genes: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        fitness: 100,
-    };
+    return random();
 }
 
 fn main() {
