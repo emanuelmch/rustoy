@@ -79,19 +79,8 @@ fn next_generation(population: [Chromosome; POPULATION_SIZE]) -> [Chromosome; PO
         let mom = elite[i];
         let dad = elite[i + 1];
 
-        const MIDDLE: usize = CHROMOSOME_SIZE / 2;
-
-        let mut first = [0; CHROMOSOME_SIZE];
-        mom.genes[0..MIDDLE].iter().enumerate().for_each(|(i, gene)| first[i] = gene.to_owned());
-        dad.genes[MIDDLE..CHROMOSOME_SIZE].iter().enumerate().for_each(|(i, gene)| first[i + MIDDLE] = gene.to_owned());
-        let first_fitness = fitness(first);
-        offspring[i] = Chromosome { genes: first, fitness: first_fitness };
-
-        let mut second = [0; CHROMOSOME_SIZE];
-        dad.genes[0..MIDDLE].iter().enumerate().for_each(|(i, gene)| second[i] = gene.to_owned());
-        mom.genes[MIDDLE..CHROMOSOME_SIZE].iter().enumerate().for_each(|(i, gene)| second[i + MIDDLE] = gene.to_owned());
-        let second_fitness = fitness(second);
-        offspring[i + 1] = Chromosome { genes: second, fitness: second_fitness };
+        offspring[i] = make_offspring(mom, dad);
+        offspring[i + 1] = make_offspring(dad, mom);
     }
 
     assert_eq!(offspring.len(), ELITE);
@@ -103,6 +92,15 @@ fn next_generation(population: [Chromosome; POPULATION_SIZE]) -> [Chromosome; PO
     for i in (ELITE + offspring.len())..POPULATION_SIZE { final_population[i] = Default::default(); }
 
     return final_population;
+}
+
+fn make_offspring(mom: Chromosome, dad: Chromosome) -> Chromosome {
+    const MIDDLE: usize = CHROMOSOME_SIZE / 2;
+
+    let mut child = [0; CHROMOSOME_SIZE];
+    mom.genes[0..MIDDLE].iter().enumerate().for_each(|(i, gene)| child[i] = gene.to_owned());
+    dad.genes[MIDDLE..CHROMOSOME_SIZE].iter().enumerate().for_each(|(i, gene)| child[i + MIDDLE] = gene.to_owned());
+    return Chromosome { genes: child, fitness: fitness(child) };
 }
 
 fn run() -> Chromosome {
